@@ -7,7 +7,7 @@ iOS or Android app, and still be plainly NTF. The kit is `assets/app/app.css`; e
 
 ## What carries over, and what changes
 
-**NTF identity (unchanged):** the palette (paper, ink, muted, wine, blush, hairline), one wine accent, Fraunces for
+**NTF identity (unchanged):** the palette (paper, ink, muted, wine, blush, hairline), one wine accent, Literata for
 titles (never bold), Inter for everything else, JetBrains Mono for doses, timers and values, light only, nothing
 under 12px, plain British English, sentence case, no emoji, the safe arrows only. Clinical colours (nerves yellow,
 arteries red, veins blue, correct green, incorrect red, warning amber) keep their meaning.
@@ -52,9 +52,9 @@ Android's font size scales it too, so use the tokens, never fixed pixels.
 
 | Token | Size / line | Font | Use |
 |---|---|---|---|
-| large | 34 / 1.2, −0.02em | Fraunces 400 | Screen title |
-| title1 | 28 | Fraunces 400 | Score in a ring |
-| title2 | 22 / 1.25 | Fraunces 400 | Card titles, empty states, in-content headings |
+| large | 34 / 1.2, −0.02em | Literata 400 | Screen title |
+| title1 | 28 | Literata 400 | Score in a ring |
+| title2 | 22 / 1.25 | Literata 400 | Card titles, empty states, in-content headings |
 | headline | 17, 600 | Inter | Bar and sheet titles |
 | body | 17 / 1.47 (reading 1.6) | Inter | Rows, choices, buttons (600), text |
 | callout | 16 | Inter | Spare |
