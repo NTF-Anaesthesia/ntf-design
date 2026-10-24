@@ -292,18 +292,21 @@
         body.addEventListener('pointerup', up); body.addEventListener('pointercancel', up);
         // At full height the body scrolls; scrolled to the top, pulling down drags the sheet down, as on iOS. Touch
         // events here: only a cancelled touchmove stops the browser taking the pan (pointer events just get cancelled).
+        // The whole sheet below the head listens (the body may not reach the bottom), and a real finger wobbles a few
+        // pixels before it goes anywhere, so nothing is decided inside the first 6px.
         var ty = null, tx = 0;
-        body.addEventListener('touchstart', function (e) {
+        sheet.addEventListener('touchstart', function (e) {
           ty = null;
-          if (centred.matches || e.touches.length !== 1 || sheet.getAttribute('data-detent') !== topDetent(ds) || noGestureInSheet(e.target)) return;
+          if (centred.matches || e.touches.length !== 1 || sheet.getAttribute('data-detent') !== topDetent(ds)) return;
+          if (e.target.closest('.app-sheet-grabber,.app-sheet-head') || noGestureInSheet(e.target)) return;   // the head drags by pointer
           ty = e.touches[0].clientY; tx = e.touches[0].clientX;
         }, { passive: true });
-        body.addEventListener('touchmove', function (e) {
+        sheet.addEventListener('touchmove', function (e) {
           if (ty === null) return;
-          var t = e.touches[0], ddy = t.clientY - ty;
+          var t = e.touches[0], ddy = t.clientY - ty, ddx = Math.abs(t.clientX - tx);
           if (id !== 'touch') {
-            if (body.scrollTop > 0 || ddy < 0 || Math.abs(t.clientX - tx) > Math.abs(ddy)) { ty = null; return; }   // scrolling or sideways: not ours
-            if (e.cancelable) e.preventDefault();   // hold the pan until it is clearly a pull down
+            if (body.scrollTop > 0 || ddy <= -6 || (ddx > 6 && ddx > ddy)) { ty = null; return; }   // scrolling, or sideways: not ours
+            if (ddy > 0 && e.cancelable) e.preventDefault();   // hold the pan until it is clearly a pull down
             if (ddy < 6) return;
             y0 = ty; x0 = tx; dy = 0; last = [[e.timeStamp, ty]]; id = 'touch'; from = body; moved = false;
             h0 = sheet.getBoundingClientRect().height;
@@ -317,7 +320,7 @@
           if (id !== 'touch') return;
           up({ pointerId: 'touch', timeStamp: e.timeStamp }); id = null; moved = false;   // a cancelled touchmove means no click to swallow
         }
-        body.addEventListener('touchend', touchEnd); body.addEventListener('touchcancel', touchEnd);
+        sheet.addEventListener('touchend', touchEnd); sheet.addEventListener('touchcancel', touchEnd);
       }
       // a new press clears the flag, so a drag with no click after it (touch, or one that closed the sheet) never eats the next tap
       sheet.addEventListener('pointerdown', function () { moved = false; }, true);
