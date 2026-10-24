@@ -1,0 +1,256 @@
+/* NTF Anaesthesia app kit: the glass layer (DESIGN-APP.md, "Glass"). Opt in: link it after app.css and put
+   class="app app--glass" on <html>. Without that class nothing here applies, so apps on app.css alone never change.
+   The iOS 26 look in NTF colours: floating glass controls over the content, a scroll-edge blur under them instead of
+   a full-width bar, a floating tab bar, sheets that float until they are pulled up, the system font for the
+   interface (Literata stays for titles), and spring motion. Content (rows, cards, text) stays solid: glass is only
+   for things that float above it. Light only. */
+
+/* ---------- Tokens ---------- */
+html.app--glass{
+  /* the interface font is the phone's own (SF Pro on iPhone, Roboto on Android); titles keep Literata */
+  --app-sans:-apple-system,system-ui,BlinkMacSystemFont,'NTF Sans',Inter,'Segoe UI',Roboto,sans-serif;
+  /* glass: a tinted, blurred layer with a light rim. "regular" sits over text, "clear" over images and colour */
+  --app-glass:rgb(251 250 246 / .62);
+  --app-glass-clear:rgb(251 250 246 / .34);
+  --app-glass-thick:rgb(251 250 246 / .8);
+  --app-glass-press:rgb(232 222 215 / .7);
+  --app-glass-lens:rgb(255 255 255 / .62);      /* the brighter pill under the current tab or segment */
+  --app-glass-blur:blur(14px) saturate(1.9) brightness(1.04);
+  --app-glass-blur-thick:blur(28px) saturate(1.7) brightness(1.03);
+  --app-glass-rim:inset 0 1px 0 rgb(255 255 255 / .75),inset 0 -.5px 0 rgb(255 255 255 / .35),inset 0 0 0 .5px rgb(255 255 255 / .45);
+  --app-glass-shadow:0 0 0 .5px rgb(39 39 34 / .08),0 6px 20px rgb(39 39 34 / .12),0 1px 3px rgb(39 39 34 / .06);
+  --app-glass-r:var(--app-r-full);
+  /* the top and bottom of the screen fade the content out under the controls (iOS 26 "scroll edge") */
+  --app-edge-h:calc(var(--app-safe-t) + 64px);
+  /* bars: controls float, so the bar row is a little taller */
+  --app-bar-h:52px; --app-tab-h:62px;
+  --app-tab-gap:max(var(--app-safe-b),12px);
+  /* sheets: inset and very round while they float, square-ish edges at full height */
+  --app-sheet-inset:8px; --app-sheet-r:38px;
+  /* springs (CSS linear() samples of a damped spring): smooth has no overshoot, snappy a little, bouncy more */
+  --app-spring:linear(0,.082,.243,.413,.562,.682,.774,.841,.89,.925,.949,.965,.977,.984,.99,.993,.995,.997,.998,.999,1);
+  --app-spring-snappy:linear(0,.138,.388,.618,.786,.895,.956,.988,1.002,1.006,1.006,1.005,1.003,1.002,1.001,1);
+  --app-spring-bouncy:linear(0,.146,.423,.685,.874,.984,1.034,1.046,1.039,1.027,1.014,1.006,1.001,.998,.998,1);
+  --app-d-spring:520ms; --app-d-spring-long:640ms;
+}
+@media (prefers-reduced-motion:reduce){html.app--glass{--app-d-spring:1ms;--app-d-spring-long:1ms}}
+
+/* Reduce transparency (where the browser reports it), more contrast, or no backdrop-filter: solid surfaces, same shapes */
+/* html.app--solid: the app's own "Solid bars" setting (Safari does not report the phone's Reduce Transparency) */
+html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(--app-surface);--app-glass-thick:var(--app-surface);
+  --app-glass-lens:var(--app-blush);--app-glass-blur:none;--app-glass-blur-thick:none}
+@media (prefers-reduced-transparency:reduce),(prefers-contrast:more){
+  html.app--glass{--app-glass:var(--app-surface);--app-glass-clear:var(--app-surface);--app-glass-thick:var(--app-surface);
+    --app-glass-lens:var(--app-blush);--app-glass-blur:none;--app-glass-blur-thick:none}
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  html.app--glass{--app-glass:var(--app-surface);--app-glass-clear:var(--app-surface);--app-glass-thick:var(--app-surface);--app-glass-lens:var(--app-blush)}
+}
+
+/* ---------- The material ---------- */
+.app--glass .app-glass,
+.app--glass .app-bar-btn,
+.app--glass .app-bar-group,
+.app--glass .app-tabbar-inner,
+.app--glass .app-tabbar-search,
+.app--glass .app-toolbar-inner,
+.app--glass .app-btn--glass,
+.app--glass .app-segmented,
+.app--glass .app-menu,
+.app--glass .app-toast{
+  background:var(--app-glass);box-shadow:var(--app-glass-rim),var(--app-glass-shadow);
+  -webkit-backdrop-filter:var(--app-glass-blur);backdrop-filter:var(--app-glass-blur)}
+.app--glass .app-glass--clear{background:var(--app-glass-clear)}
+.app--glass .app-glass--thick{background:var(--app-glass-thick);-webkit-backdrop-filter:var(--app-glass-blur-thick);backdrop-filter:var(--app-glass-blur-thick)}
+
+/* ---------- Top bar: floating glass buttons over a scroll-edge blur ---------- */
+.app--glass .app-bar,
+.app--glass .app-bar.is-collapsed,
+.app--glass .app-bar--solid{background:transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;
+  padding-inline:calc(var(--app-s4) + var(--app-safe-l)) calc(var(--app-s4) + var(--app-safe-r))}
+/* the edge: a blur that fades out downwards, drawn on ::before so a fixed sheet inside the bar is never trapped */
+.app--glass .app-bar::before{content:"";position:absolute;inset:0 0 -20px 0;z-index:-1;pointer-events:none;opacity:0;
+  background:linear-gradient(rgb(241 237 228 / .9),rgb(241 237 228 / .55) 60%,rgb(241 237 228 / 0));
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  -webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent);
+  transition:opacity var(--app-d-fast) linear}
+.app--glass .app-bar.is-collapsed::before,.app--glass .app-bar--solid::before{opacity:1}
+.app--glass .app-bar-row{min-height:var(--app-bar-h)}
+.app--glass .app-bar-title{font-weight:600;letter-spacing:-.02em;max-width:46vw}
+/* bar buttons are glass circles (icon) or capsules (words); a group shares one capsule */
+.app--glass .app-bar-btn{min-width:44px;min-height:44px;padding:0 var(--app-s3);border-radius:var(--app-glass-r);color:var(--app-ink);font-weight:500;
+  transition:transform var(--app-d-spring) var(--app-spring-snappy),background-color var(--app-d-fast) linear}
+.app--glass .app-bar-btn:active{opacity:1;transform:scale(1.12);background:var(--app-glass-press)}
+.app--glass .app-bar-btn--accent{color:var(--app-ivory);background:rgb(99 61 60 / .88)}
+.app--glass .app-bar-btn--accent:active{background:var(--app-wine-press)}
+.app--glass .app-bar-btn:has(svg):not(:has(span)){padding:0;width:44px}
+.app--glass .app-back{max-width:44vw;padding-inline:0 var(--app-s3)}
+.app--glass .app-back:not(:has(span)){width:44px;padding:0;justify-content:center}
+.app--glass .app-back::before{margin:0 0 0 18px;width:11px;height:11px;border-width:0 0 2.5px 2.5px}
+.app--glass .app-back:not(:has(span))::before{margin:0 0 0 5px}
+.app--glass .app-bar-group{display:flex;align-items:center;border-radius:var(--app-glass-r)}
+.app--glass .app-bar-group .app-bar-btn{background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+.app--glass .app-bar-group .app-bar-btn:active{background:var(--app-glass-press)}
+/* large title: Literata, a little larger, as iOS 26 */
+.app--glass .app-large-title{font-size:calc(36rem/17);margin-top:var(--app-s2)}
+
+/* ---------- Tab bar: a floating capsule, a lens under the current tab, optional search circle ---------- */
+.app--glass .app-tabbar{left:0;right:0;bottom:0;gap:var(--app-s2);align-items:flex-end;pointer-events:none;
+  padding:0 calc(var(--app-s4) + var(--app-safe-r)) var(--app-tab-gap) calc(var(--app-s4) + var(--app-safe-l));
+  background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+/* the bottom scroll edge */
+.app--glass .app-tabbar::before,.app--glass .app-toolbar::before{content:"";position:absolute;inset:-24px 0 0 0;z-index:-1;pointer-events:none;
+  background:linear-gradient(rgb(241 237 228 / 0),rgb(241 237 228 / .85) 70%);
+  -webkit-mask-image:linear-gradient(transparent,#000 60%);mask-image:linear-gradient(transparent,#000 60%)}
+.app--glass .app-tabbar-inner{pointer-events:auto;position:relative;flex:1 1 auto;min-width:0;max-width:440px;padding:4px;border-radius:var(--app-glass-r);
+  transition:transform var(--app-d-spring-long) var(--app-spring-snappy),max-width var(--app-d-spring-long) var(--app-spring)}
+.app--glass .app-tab{min-height:54px;padding:4px 2px 5px;gap:1px;border-radius:var(--app-glass-r);color:var(--app-ink-soft);font-size:var(--app-t-caption);font-weight:500;white-space:nowrap;letter-spacing:-.01em;min-width:0;
+  transition:color var(--app-d-fast) linear,transform var(--app-d-spring) var(--app-spring-snappy)}
+.app--glass .app-tab-icon{width:auto;height:28px;background:none!important}
+.app--glass .app-tab-icon svg{width:26px;height:26px}
+.app--glass .app-tab[aria-current="page"],.app--glass .app-tab[aria-selected="true"]{color:var(--app-wine);font-weight:600;
+  background:var(--app-glass-lens);box-shadow:inset 0 0 0 .5px rgb(255 255 255 / .8),0 1px 4px rgb(39 39 34 / .08)}
+.app--glass .app-tab:active{transform:scale(.92)}
+.app--glass .app-tab:active:not([aria-current="page"]){background:var(--app-glass-press)}
+.app--glass .app-tabbar-search{pointer-events:auto;flex:none;display:grid;place-items:center;width:62px;height:62px;flex:none;border:0;border-radius:50%;color:var(--app-ink);cursor:pointer;
+  transition:transform var(--app-d-spring) var(--app-spring-snappy)}
+.app--glass .app-tabbar-search svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.app--glass .app-tabbar-search:active{transform:scale(1.1)}
+@media (max-width:374px){
+  .app--glass .app-tabbar-search{width:54px;height:54px}
+  .app--glass .app-tab{font-size:var(--app-t-caption);letter-spacing:-.02em}
+  .app--glass .app-tabbar{padding-inline:calc(var(--app-s2) + var(--app-safe-l));gap:6px}
+  .app--glass .app-tabbar-inner{padding:3px;grid-auto-columns:auto;justify-content:space-between}   /* widths follow the labels */
+  .app--glass .app-tab{padding-inline:6px}
+}
+/* minimised while scrolling down (gestures.js sets it): the bar shrinks to the current tab */
+.app--glass .app-tabbar.is-minimised .app-tabbar-inner{flex:0 0 auto;max-width:120px}
+.app--glass .app-tabbar.is-minimised .app-tab:not([aria-current="page"]){display:none}
+.app--glass.app-has-tabbar .app-main,.app--glass .app-has-tabbar .app-main{padding-bottom:calc(var(--app-tab-h) + var(--app-tab-gap) + var(--app-s8))}
+
+/* toolbar (edit mode, sessions): a floating capsule too */
+.app--glass .app-toolbar{background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;
+  padding:0 calc(var(--app-s5) + var(--app-safe-r)) var(--app-tab-gap) calc(var(--app-s5) + var(--app-safe-l))}
+.app--glass .app-toolbar-inner{align-items:center;padding:4px;border-radius:var(--app-glass-r);max-width:440px}
+.app--glass .app-toolbar-inner .app-btn{min-height:50px;border-radius:var(--app-glass-r);background:transparent;color:var(--app-wine)}
+.app--glass .app-toolbar-inner .app-btn:active{background:var(--app-glass-press)}
+.app--glass .app-toolbar-inner .app-btn[disabled]{color:var(--app-muted)}
+.app--glass .app-toolbar-count{flex:1.4;text-align:center;font-size:var(--app-t-subhead);font-weight:600;color:var(--app-ink)}
+
+/* ---------- Controls ---------- */
+/* buttons become capsules; glass buttons for actions that float over content */
+.app--glass .app-btn{border-radius:var(--app-glass-r);transition:transform var(--app-d-spring) var(--app-spring-snappy),background-color var(--app-d-fast) linear,opacity var(--app-d-fast) linear}
+.app--glass .app-btn:active,.app--glass .app-btn.is-pressed{transform:scale(.96)}
+.app--glass .app-btn--glass{color:var(--app-ink)}
+.app--glass .app-btn--glass:active{background:var(--app-glass-press);transform:scale(1.04)}
+.app--glass .app-card .app-btn,.app--glass .app-card-actions .app-btn{border-radius:var(--app-glass-r)}
+/* segmented control: a glass track with a lens that slides (gestures.js moves --app-seg-i; without it the lens jumps) */
+.app--glass .app-segmented{border-radius:var(--app-glass-r);padding:3px;background:var(--app-glass)}
+.app--glass .app-seg span{border-radius:var(--app-glass-r)}
+.app--glass .app-seg span::before{inset:0;border-radius:var(--app-glass-r);transition:background-color var(--app-d-fast) linear,transform var(--app-d-spring) var(--app-spring-bouncy)}
+.app--glass .app-seg input:checked+span::before{background:var(--app-glass-lens);box-shadow:inset 0 0 0 .5px rgb(255 255 255 / .9),var(--app-shadow-thumb)}
+.app--glass .app-seg input:checked:active+span::before{transform:scale(1.08)}
+.app--glass .app-seg span::after{display:none}
+/* switch: the knob turns to glass and stretches while held (iOS 26) */
+.app--glass .app-switch{width:62px;height:28px;transition:background-color var(--app-d-med) var(--app-ease)}
+.app--glass .app-switch::before{top:2px;left:2px;width:37px;height:24px;border-radius:var(--app-r-full);
+  transition:transform var(--app-d-spring) var(--app-spring-bouncy),width var(--app-d-spring) var(--app-spring-bouncy),background-color var(--app-d-fast) linear,box-shadow var(--app-d-fast) linear}
+.app--glass .app-switch:checked::before{transform:translateX(21px)}
+.app--glass .app-switch:active::before{width:44px;transform:scale(1.18);background:rgb(255 255 255 / .55);box-shadow:var(--app-glass-rim),0 2px 8px rgb(39 39 34 / .18)}
+.app--glass .app-switch:checked:active::before{transform:translateX(14px) scale(1.18)}
+/* chips: glass pills */
+.app--glass .app-chip::before{background:var(--app-glass);box-shadow:var(--app-glass-rim),0 0 0 .5px rgb(39 39 34 / .12);
+  -webkit-backdrop-filter:var(--app-glass-blur);backdrop-filter:var(--app-glass-blur)}
+.app--glass .app-chip:active::before{transform:scale(1.06)}
+.app--glass .app-chip[aria-pressed="true"]::before,.app--glass .app-chip.is-on::before{background:var(--app-blush);box-shadow:inset 0 0 0 1.5px var(--app-wine)}
+/* grouped sections: a little rounder, as iOS 26 */
+.app--glass .app-list{border-radius:20px}
+.app--glass .app-card{border-radius:22px}
+.app--glass .app-row:focus-visible{border-radius:20px}
+
+/* ---------- Sheets: float inset at medium height, fill the screen at large ---------- */
+.app--glass .app-sheet{inset:auto var(--app-sheet-inset) var(--app-sheet-inset) var(--app-sheet-inset);width:auto;
+  border-radius:var(--app-sheet-r);background:var(--app-glass-thick);box-shadow:var(--app-glass-rim),var(--app-shadow-float);
+  -webkit-backdrop-filter:var(--app-glass-blur-thick);backdrop-filter:var(--app-glass-blur-thick);
+  transition:transform var(--app-d-spring-long) var(--app-spring),inset var(--app-d-spring-long) var(--app-spring),border-radius var(--app-d-spring-long) var(--app-spring),
+    height var(--app-d-spring-long) var(--app-spring),overlay var(--app-d-spring-long) allow-discrete,display var(--app-d-spring-long) allow-discrete}
+.app--glass .app-sheet::backdrop{background:rgb(39 39 34 / .18)}
+.app--glass .app-sheet[data-detent="large"],.app--glass .app-sheet--large{inset:auto 0 0 0;border-radius:var(--app-sheet-r) var(--app-sheet-r) 0 0;background:var(--app-surface);
+  -webkit-backdrop-filter:none;backdrop-filter:none}
+.app--glass .app-sheet[data-detent="medium"]{height:55dvh}
+.app--glass .app-sheet[data-detent="large"]{height:calc(100dvh - var(--app-safe-t) - 12px)}
+.app--glass .app-sheet-head .app-bar-btn{min-width:44px}
+.app--glass .app-sheet-foot{background:transparent;box-shadow:none}
+/* while a sheet is at full height the content behind it steps back, as on iOS (gestures.js marks the bar and main:
+   never the body, whose fixed tab bar would then move with it) */
+.app--glass .app-behind-sheet{transform:scale(.93);transform-origin:50% 0;border-radius:22px;filter:brightness(.82);
+  transition:transform var(--app-d-spring-long) var(--app-spring),filter var(--app-d-spring-long) linear}
+.app--glass .app-bar.app-behind-sheet{transform:scale(.93) translateY(8px)}
+.app--glass .app-bar:not(.app-behind-sheet),.app--glass .app-main:not(.app-behind-sheet){transition:transform var(--app-d-spring-long) var(--app-spring),filter var(--app-d-spring-long) linear}
+.app--glass.app-sheet-large-open .app-tabbar{opacity:0;transition:opacity var(--app-d-fast) linear}
+@media (min-width:768px){
+  .app--glass .app-sheet,.app--glass .app-sheet[data-detent]{inset:auto 0 auto 0;width:min(560px,calc(100% - 48px));border-radius:var(--app-sheet-r);height:auto}
+  .app--glass .app-behind-sheet,.app--glass .app-bar.app-behind-sheet{transform:none;filter:none}
+}
+
+/* ---------- Menus (touch and hold, and menu buttons) ---------- */
+.app-menu-layer{position:fixed;inset:0;z-index:60;display:none}
+.app-menu-layer.is-open{display:block}
+.app-menu-veil{position:absolute;inset:0;background:rgb(241 237 228 / .35);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);
+  opacity:0;transition:opacity var(--app-d-med) linear}
+.app-menu-layer.is-open .app-menu-veil{opacity:1}
+.app-menu-preview{position:absolute;margin:0;border-radius:20px;overflow:hidden;background:var(--app-surface);box-shadow:var(--app-shadow-float);
+  transform-origin:50% 50%;transition:transform var(--app-d-spring) var(--app-spring-snappy),top var(--app-d-spring) var(--app-spring),left var(--app-d-spring) var(--app-spring)}
+.app-menu-preview>*{pointer-events:none}
+.app-menu{position:absolute;min-width:236px;max-width:min(300px,calc(100vw - 32px));margin:0;padding:6px 0;list-style:none;border-radius:20px;
+  background:var(--app-glass-thick);-webkit-backdrop-filter:var(--app-glass-blur-thick);backdrop-filter:var(--app-glass-blur-thick);
+  transform-origin:var(--app-menu-origin,50% 0);transform:scale(.4);opacity:0;
+  transition:transform var(--app-d-spring) var(--app-spring-snappy),opacity var(--app-d-fast) linear}
+.app-menu-layer.is-open .app-menu{transform:none;opacity:1}
+.app-menu:focus{outline:none}
+.app-menu-item{display:flex;align-items:center;gap:var(--app-s3);width:100%;min-height:44px;padding:10px var(--app-s4);border:0;background:none;color:var(--app-ink);
+  font:inherit;font-size:var(--app-t-body);text-align:left;cursor:pointer;-webkit-user-select:none;user-select:none}
+.app-menu-item>span{flex:1}
+.app-menu-item svg{flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.app-menu-item.is-active,.app-menu-item:active{background:rgb(39 39 34 / .08)}
+.app-menu-item:focus-visible{outline:2px solid var(--app-wine);outline-offset:-3px;border-radius:12px}
+.app-menu-item--danger{color:var(--app-bad)}
+.app-menu-sep{height:6px;margin:4px 0;background:rgb(39 39 34 / .06)}
+/* the row being held sinks a little before the menu opens */
+.app-is-holding{transform:scale(.97);transition:transform 380ms var(--app-ease)!important}
+
+/* ---------- Edit mode (multiple select) ---------- */
+.app-list[data-select]{--app-check:0px}
+.app-list.is-editing{--app-check:40px}
+.app-list[data-select] .app-row{transition:padding-left var(--app-d-spring) var(--app-spring),background-color var(--app-d-fast) linear;padding-left:calc(var(--app-s4) + var(--app-check))}
+.app-list[data-select] .app-row::after{content:"";position:absolute;left:calc(var(--app-s4) - 40px + var(--app-check));top:50%;width:24px;height:24px;margin-top:-12px;border-radius:50%;
+  box-shadow:inset 0 0 0 1.5px var(--app-control);opacity:0;transition:left var(--app-d-spring) var(--app-spring),opacity var(--app-d-fast) linear,background-color var(--app-d-fast) linear}
+.app-list.is-editing .app-row::after{opacity:1}
+.app-list.is-editing .app-row[aria-checked="true"]::after{background:var(--app-wine) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 12.5l3.2 3.2L17 9' fill='none' stroke='%23fffaf0' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/24px no-repeat;box-shadow:none}
+.app-list.is-editing .app-row-chevron{opacity:0}
+.app-list[data-select] .app-row:has(.app-row-icon){--app-sep-left:calc(58px + var(--app-check))}
+.app-list[data-select] .app-row{--app-sep-left:calc(var(--app-s4) + var(--app-check))}
+
+/* ---------- Compare (2 to 4 items side by side; scrolls sideways past 2 on a phone) ---------- */
+.app-compare{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(min(46vw,220px),1fr);gap:var(--app-s2);margin:0 calc(-1 * var(--app-gutter));padding:0 var(--app-gutter) var(--app-s2);
+  overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--app-gutter);overscroll-behavior-x:contain;scrollbar-width:none}
+.app-compare::-webkit-scrollbar{display:none}
+.app-compare-col{scroll-snap-align:start;background:var(--app-surface);border-radius:20px;padding:var(--app-s3) var(--app-s3) var(--app-s4);min-width:0}
+.app-compare-title{margin:0 0 var(--app-s2);font-family:var(--app-serif);font-weight:400;font-size:calc(19rem/17);line-height:1.25}
+.app-compare dl{margin:0;display:grid;gap:var(--app-s2)}
+.app-compare dt{font-size:var(--app-t-caption);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--app-muted)}
+.app-compare dd{margin:0;font-size:var(--app-t-subhead);line-height:1.4}
+
+/* ---------- Edge swipe back (gestures.js, home-screen iPhone app only) ---------- */
+.app-swipe-shade{position:fixed;inset:0;z-index:50;pointer-events:none;background:rgb(39 39 34 / .16);opacity:0}
+
+/* ---------- Toast: a glass capsule ---------- */
+.app--glass .app-toast{border-radius:var(--app-glass-r);color:var(--app-ink)}
+
+/* ---------- Larger screens: the rail stays glass ---------- */
+@media (min-width:1024px){
+  .app--glass .app-tabbar{padding:calc(var(--app-safe-t) + var(--app-s6)) 0 var(--app-s6) calc(var(--app-s3) + var(--app-safe-l));align-items:flex-start}
+  .app--glass .app-tabbar::before{display:none}
+  .app--glass .app-tabbar-inner{max-width:none;width:76px;border-radius:38px}
+  .app--glass .app-tabbar-search{display:none}
+}

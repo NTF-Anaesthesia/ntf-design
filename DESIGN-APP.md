@@ -208,3 +208,30 @@ push becomes a plain swap. No confetti, no sounds, no looping animation.
 - The `hidden` attribute always hides a kit component (for example a tab bar hidden during a test).
 - Clinical callouts, step lists, tables and monitor strips are app-specific: build them in the app's CSS from the kit's
   tokens rather than adding one-off components here.
+
+## Glass and gestures (draft, October 2026)
+
+An opt-in layer for an iOS 26 feel, shown in `glass-sample.html`; no app uses it yet, so it may still change in place.
+Link `glass.css` after `app.css`, put `class="app app--glass"` on `<html>`, and load `gestures.js` (defer).
+
+- **Glass** only on things that float over content (bar buttons, tab bar, toolbar, segmented track, chips, menus,
+  sheets at medium height, toasts); rows, cards and text stay solid. A scroll-edge blur under the top buttons and above
+  the tab bar replaces the full-width bar. Solid fallback: `html.app--solid` (the app's own setting, since Safari does
+  not report Reduce Transparency), Increase Contrast, or no `backdrop-filter`.
+- **Type:** the phone's own font for the interface; Literata stays for large titles and card titles. Nothing under 12px.
+- **Motion:** springs as CSS `linear()` curves (`--app-spring`, `--app-spring-snappy`, `--app-spring-bouncy`); all
+  off with Reduce Motion.
+- **Touch and hold** `[data-hold-menu="#template"]`: 500 ms without moving 10 px opens a menu with a preview; the
+  click that comes with lifting the finger is swallowed; right-click, Android's long press, the context-menu key and
+  Shift+F10 open the same menu. Every action in a hold menu must also be reachable without holding.
+- **Sheets** `dialog.app-sheet[data-detents="medium large"]`: dragged by the grabber and head only (the body always
+  scrolls), settle on the nearest height by position and speed; at full height the content behind steps back. Each
+  sheet is a history entry.
+- **Edge swipe back** `html[data-edge-back]`: iPhone home-screen app only, and only on a screen with `.app-back`; the
+  content follows the finger and the Back button is pressed on release. Check on a phone before an app turns it on.
+- **Edit mode** `.app-list[data-select]` with `[data-edit-for]`, `[data-select-toolbar]`, `[data-select-count]` and
+  `[data-select-all]`: tap ticks a row, a finger dragged down the ticks sets the range (against the ticks as they were
+  when it started), the toolbar replaces the tab bar. **Compare** `.app-compare`: 2 to 4 columns, scrolls sideways
+  past two on a phone.
+- Never start a gesture from a field, a dialog, a drag handle, anything that scrolls sideways or the screen's edges
+  (Android's Back).
