@@ -13,6 +13,7 @@
 <link rel="icon" href="monogram.svg" type="image/svg+xml">
 <link rel="stylesheet" href="app.css">
 <link rel="stylesheet" href="glass.css">
+<script src="appearance.js"></script>
 <script src="gestures.js" defer></script>
 <style>
   /* sample only: two screens on one page */
@@ -76,10 +77,10 @@
       <p class="app-section-footer">Touch and hold a row for its menu. Select, then tick rows or drag a finger down the circles; choose 2 to 4 to compare.</p>
     </section>
 
+    <div data-appearance></div>
     <section class="app-section" aria-labelledby="h-look">
-      <h2 class="app-section-header" id="h-look">Look</h2>
+      <h2 class="app-section-header" id="h-look">Sheets</h2>
       <ul class="app-list">
-        <li><label class="app-row"><span class="app-row-body"><span class="app-row-title">Solid bars</span><span class="app-row-sub">No see-through glass</span></span><input class="app-switch" type="checkbox" role="switch" id="solid"></label></li>
         <li><button class="app-row app-row--action" type="button" data-open-sheet="#about"><span class="app-row-body"><span class="app-row-title">Open a sheet</span></span></button></li>
       </ul>
       <p class="app-section-footer">The sheet opens at half height; pull it up for full height (the page steps back), or down to close.</p>
@@ -185,7 +186,6 @@ var toast = document.getElementById('toast'), toastText = document.getElementByI
 function say(msg) { toastText.textContent = msg; toast.classList.add('is-visible'); clearTimeout(tt); tt = setTimeout(function () { toast.classList.remove('is-visible'); }, 2500); }
 document.addEventListener('click', function (e) { var b = e.target.closest('[data-toast]'); if (b && !b.disabled) say(b.getAttribute('data-toast')); });
 document.querySelectorAll('.app-chip').forEach(function (c) { c.addEventListener('click', function () { c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); }); });
-document.getElementById('solid').addEventListener('change', function (e) { document.documentElement.classList.toggle('app--solid', e.target.checked); });
 
 // hold menu actions
 document.addEventListener('app-menu', function (e) {
