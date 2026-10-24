@@ -203,7 +203,14 @@
     var g = $('.app-sheet-grabber', sheet);
     if (g) g.setAttribute('aria-expanded', d === 'large' ? 'true' : 'false');
     var body = $('.app-sheet-body', sheet);
-    if (body) body.style.touchAction = d === topDetent(ds) ? '' : 'pan-x';
+    if (body) setBodyPan(body, d === topDetent(ds));
+  }
+  // At full height the body pans freely, except that at its top a finger moving down is left to the sheet (pan-down only
+  // lets content scroll down), so Chrome neither scrolls, stretches nor moves its address bar under a pull. Safari
+  // ignores pan-down and keeps '' (the touchmove handler holds the pan there).
+  function setBodyPan(body, top) {
+    body.style.touchAction = top ? '' : 'pan-x';
+    if (top && body.scrollTop <= 0) body.style.touchAction = 'pan-x pan-down';
   }
   function openSheet(sheet) {
     if (sheet.open) return;
@@ -295,6 +302,7 @@
         // The whole sheet below the head listens (the body may not reach the bottom), and a real finger wobbles a few
         // pixels before it goes anywhere, so nothing is decided inside the first 6px.
         var ty = null, tx = 0;
+        body.addEventListener('scroll', function () { setBodyPan(body, sheet.getAttribute('data-detent') === topDetent(ds)); }, { passive: true });
         sheet.addEventListener('touchstart', function (e) {
           ty = null;
           if (centred.matches || e.touches.length !== 1 || sheet.getAttribute('data-detent') !== topDetent(ds)) return;
@@ -308,7 +316,7 @@
             if (body.scrollTop > 0 || ddy <= -6 || (ddx > 6 && ddx > ddy)) { ty = null; return; }   // scrolling, or sideways: not ours
             if (ddy > 0 && e.cancelable) e.preventDefault();   // hold the pan until it is clearly a pull down
             if (ddy < 6) return;
-            y0 = ty; x0 = tx; dy = 0; last = [[e.timeStamp, ty]]; id = 'touch'; from = body; moved = false;
+            y0 = t.clientY; x0 = tx; dy = 0; last = [[e.timeStamp, t.clientY]]; id = 'touch'; from = body; moved = false;   // from here, so the sheet doesn't jump 6px
             h0 = sheet.getBoundingClientRect().height;
             live = true; sheet.classList.add('is-dragging');
           }
