@@ -1,0 +1,96 @@
+/* NTF Anaesthesia app kit: colour themes (DESIGN-APP.md, "Themes"). Opt in: link it after app.css (and glass.css),
+   and load appearance.js, which sets the classes below from the person's choice. Without those classes nothing here
+   applies, so the light NTF look stays as it is.
+   - html.app--dark      dark NTF colours (appearance.js sets it for Dark, and for Auto while the phone is dark)
+   - html.app--black     pure black grounds, in dark only (OLED phones)
+   - html.app--contrast  high contrast: darker text and lines, solid surfaces (lighter ones in dark)
+   - html[data-accent]   teal, navy or forest in place of wine (wine is the default and needs no attribute)
+   Clinical colours (ok, bad, warn) keep their meaning in every theme; only their shades change for dark. */
+
+/* ---------- Accents (light) ---------- */
+html[data-accent="teal"]{--app-wine:#1f5b60;--app-wine-press:#16454a;--app-blush:#d6e4e3}
+html[data-accent="navy"]{--app-wine:#2c406c;--app-wine-press:#203156;--app-blush:#dbe0eb}
+html[data-accent="forest"]{--app-wine:#2f5838;--app-wine-press:#23442b;--app-blush:#dae5da}
+/* app.css shades that were mixed from wine by hand follow the accent */
+html[data-accent] .app-card--accent .app-kicker,html[data-accent] .app-card--accent .app-muted,
+html.app--dark .app-card--accent .app-kicker,html.app--dark .app-card--accent .app-muted{color:color-mix(in srgb,var(--app-ivory) 82%,var(--app-wine))}
+html[data-accent] .app-btn--secondary:active,html[data-accent] .app-btn--secondary.is-pressed,
+html.app--dark .app-btn--secondary:active,html.app--dark .app-btn--secondary.is-pressed{background:color-mix(in srgb,var(--app-blush),var(--app-wine) 10%)}
+@media (hover:hover) and (pointer:fine){
+  html[data-accent] .app-btn--secondary:hover,html.app--dark .app-btn--secondary:hover{background:color-mix(in srgb,var(--app-blush),var(--app-wine) 5%)}
+}
+
+/* ---------- Dark ---------- */
+html.app--dark{
+  color-scheme:dark;
+  --app-ground:#151412; --app-surface:#22201d; --app-paper:#1a1916; --app-inset:#2a2824; --app-fill:#35322d;
+  --app-pressed:#2f2c28; --app-pressed-ground:#211f1c; --app-blush:#3c2c2b;
+  --app-bar:rgb(34 32 29 / .84); --app-backdrop:rgb(0 0 0 / .55);
+  --app-ink:#ece7dd; --app-ink-soft:#cbc5b8; --app-muted:#aaa497;
+  --app-wine:#e0aaa6; --app-wine-press:#cc9591; --app-ivory:#1c1513;   /* ivory is the text on the accent: dark here */
+  --app-line:#3b3832; --app-line-strong:#6f685c; --app-control:#8c8578;
+  --app-ok:#86d19e; --app-ok-bg:#17301f; --app-bad:#f2958f; --app-bad-bg:#3b1b1a; --app-warn:#e8c070; --app-warn-bg:#362b13;
+  --app-shadow-thumb:0 1px 2px rgb(0 0 0 / .4),0 2px 6px rgb(0 0 0 / .3);
+  --app-shadow-float:0 8px 28px rgb(0 0 0 / .5),0 2px 6px rgb(0 0 0 / .3);
+  /* glass.css: a dimmer rim and black shadows */
+  --app-hi:255 255 255; --app-shade:0 0 0;
+  --app-glass-lens:rgb(255 255 255 / .14);
+  --app-glass-rim:inset 0 1px 0 rgb(255 255 255 / .16),inset 0 -.5px 0 rgb(255 255 255 / .06),inset 0 0 0 .5px rgb(255 255 255 / .1);
+}
+html.app--dark[data-accent="teal"]{--app-wine:#93d0d2;--app-wine-press:#7dbcbe;--app-blush:#1e3537}
+html.app--dark[data-accent="navy"]{--app-wine:#adbfe9;--app-wine-press:#97abd8;--app-blush:#232c43}
+html.app--dark[data-accent="forest"]{--app-wine:#a2d1ab;--app-wine-press:#8dbd97;--app-blush:#203324}
+/* app.css colours that are not tokens */
+html.app--dark .app-seg+.app-seg span::after{background:var(--app-line)}
+html.app--dark .app-switch{background:var(--app-fill)}
+html.app--dark .app-switch::before{background:#f4f1ea}
+html.app--dark .app-input::placeholder{color:#8a8477}
+html.app--dark .app-sheet-grabber{background:#5c574e}
+html.app--dark .app-btn--danger:active,html.app--dark .app-btn--danger.is-pressed{background:color-mix(in srgb,var(--app-bad-bg),var(--app-bad) 12%)}
+html.app--dark .app-choice.is-correct .app-choice-letter,html.app--dark .app-choice.is-answer .app-choice-letter,
+html.app--dark .app-choice.is-incorrect .app-choice-letter{color:var(--app-ground)}
+html.app--dark .app-skeleton{background:linear-gradient(90deg,var(--app-fill) 0 40%,#403c36 50%,var(--app-fill) 60% 100%) 0 0/300% 100%}
+html.app--dark .app-toast:not(.app--glass *){background:#3a3732;color:var(--app-ink)}
+html.app--dark .app-toast-action{color:var(--app-wine)}
+html.app--dark .app-toast-action:active{background:rgb(255 255 255 / .08)}
+html.app--dark .app-toast-action:focus-visible{outline-color:var(--app-ink)}
+@media (hover:hover) and (pointer:fine){
+  html.app--dark a.app-row:hover,html.app--dark button.app-row:hover,html.app--dark label.app-row:hover{background:color-mix(in srgb,var(--app-pressed) 60%,transparent)}
+}
+
+/* ---------- Pure black (dark only) ---------- */
+html.app--dark.app--black{--app-ground:#000; --app-paper:#000; --app-surface:#161514; --app-inset:#1e1d1b; --app-fill:#2b2a27;
+  --app-pressed:#24231f; --app-pressed-ground:#0d0d0c; --app-bar:rgb(0 0 0 / .8)}
+
+/* ---------- High contrast ---------- */
+html.app--contrast{
+  --app-ink:#121210; --app-ink-soft:#2b2a26; --app-muted:#3a3934;
+  --app-line:#8f8574; --app-line-strong:#5b5347; --app-control:#5c5549;
+  --app-wine:#4e2928; --app-wine-press:#3a1e1d;
+  /* glass.css: solid surfaces, the same shapes */
+  --app-glass:var(--app-surface);--app-glass-clear:var(--app-surface);--app-glass-thick:var(--app-surface);
+  --app-glass-lens:var(--app-blush);--app-glass-blur:none;--app-glass-blur-thick:none;
+}
+html.app--contrast[data-accent="teal"]{--app-wine:#123f43;--app-wine-press:#0c2f32}
+html.app--contrast[data-accent="navy"]{--app-wine:#1c2c50;--app-wine-press:#13203d}
+html.app--contrast[data-accent="forest"]{--app-wine:#1d3e25;--app-wine-press:#142e1b}
+html.app--dark.app--contrast{
+  --app-ink:#fff; --app-ink-soft:#ebe7df; --app-muted:#d6d1c6;
+  --app-line:#6f685c; --app-line-strong:#a39b8c; --app-control:#b3ab9c;
+  --app-wine:#f2c4c1; --app-wine-press:#e4b1ad;
+}
+html.app--dark.app--contrast[data-accent="teal"]{--app-wine:#b5e6e8;--app-wine-press:#a0d6d8}
+html.app--dark.app--contrast[data-accent="navy"]{--app-wine:#ccd8f6;--app-wine-press:#b7c6ea}
+html.app--dark.app--contrast[data-accent="forest"]{--app-wine:#c0e6c7;--app-wine-press:#acd7b4}
+html.app--contrast .app-list,html.app--contrast .app-card{box-shadow:inset 0 0 0 1px var(--app-line)}
+
+/* ---------- The theme row and accent picker (appearance.js draws them) ---------- */
+.app-row--theme{display:block;padding-block:var(--app-s2)}
+.app-row--theme .app-segmented{margin:0}
+.app-swatches{display:flex;gap:var(--app-s3);margin:0;padding:var(--app-s3) var(--app-s4);border:0;min-width:0}
+.app-swatches legend{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.app-swatch{position:relative;display:grid;place-items:center;width:44px;height:44px;cursor:pointer}
+.app-swatch input{position:absolute;inset:0;margin:0;opacity:0;cursor:pointer}
+.app-swatch span{width:30px;height:30px;border-radius:50%;background:var(--app-sw);box-shadow:inset 0 0 0 .5px rgb(0 0 0 / .15)}
+.app-swatch input:checked+span{box-shadow:0 0 0 2.5px var(--app-surface),0 0 0 4.5px var(--app-sw)}
+.app-swatch input:focus-visible+span{outline:2px solid var(--app-ink);outline-offset:6px}
