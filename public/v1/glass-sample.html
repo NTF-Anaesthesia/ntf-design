@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en-GB" class="app app--glass" data-theme="light" data-edge-back="always">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f1ede4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Glass sample · NTF Anaesthesia</title>
+<meta name="description" content="A sample screen of the opt-in glass layer (glass.css) and gestures (gestures.js) of the NTF app kit.">
+<link rel="icon" href="monogram.svg" type="image/svg+xml">
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="glass.css">
+<script src="gestures.js" defer></script>
+<style>
+  /* sample only: two screens on one page */
+  [data-screen][hidden]{display:none}
+  .demo-hero{height:148px;margin:0 0 var(--app-s4);border-radius:22px;background:
+    radial-gradient(circle at 25% 35%,#e3c9a8 0 18%,transparent 19%),radial-gradient(circle at 70% 60%,#c98d7a 0 22%,transparent 23%),
+    linear-gradient(135deg,#633d3c,#8f6a55 55%,#d9c3a5);position:relative;overflow:hidden}
+  .demo-hero span{position:absolute;left:16px;bottom:12px;color:#fffaf0;font-size:var(--app-t-subhead);font-weight:600}
+  .demo-note{margin:var(--app-s2) var(--app-s4) var(--app-s6);font-size:var(--app-t-footnote);line-height:1.45;color:var(--app-muted)}
+</style>
+</head>
+<body class="app-body app-has-tabbar">
+<a class="app-skip" href="#main">Skip to content</a>
+
+<header class="app-bar" id="bar">
+  <div class="app-bar-row">
+    <div class="app-bar-lead">
+      <a class="app-bar-btn app-back" href="#" id="back" hidden><span>Blocks</span></a>
+    </div>
+    <p class="app-bar-title" aria-hidden="true" id="bar-title">Blocks</p>
+    <div class="app-bar-trail">
+      <div class="app-bar-group" id="list-actions">
+        <button class="app-bar-btn" type="button" data-select-all="#blocks">Select all</button>
+        <button class="app-bar-btn" type="button" data-edit-for="#blocks"><span>Select</span></button>
+      </div>
+      <button class="app-bar-btn" type="button" aria-label="More" data-open-sheet="#about"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="12" r=".9"/><circle cx="12" cy="12" r=".9"/><circle cx="18" cy="12" r=".9"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main class="app-main" id="main" tabindex="-1">
+  <!-- Screen 1: a list -->
+  <div data-screen="list">
+    <h1 class="app-large-title" id="large-title">Blocks</h1>
+
+    <fieldset class="app-segmented"><legend>Region</legend>
+      <label class="app-seg"><input type="radio" name="region" checked><span>All</span></label>
+      <label class="app-seg"><input type="radio" name="region"><span>Upper</span></label>
+      <label class="app-seg"><input type="radio" name="region"><span>Lower</span></label>
+      <label class="app-seg"><input type="radio" name="region"><span>Trunk</span></label>
+    </fieldset>
+
+    <div class="app-chips" role="group" aria-label="Operation">
+      <button class="app-chip" type="button" aria-pressed="true">Shoulder</button>
+      <button class="app-chip" type="button" aria-pressed="false">Hip</button>
+      <button class="app-chip" type="button" aria-pressed="false">Knee</button>
+      <button class="app-chip" type="button" aria-pressed="false">Breast</button>
+      <button class="app-chip" type="button" aria-pressed="false">Abdomen</button>
+    </div>
+
+    <section class="app-section" aria-labelledby="h-blocks">
+      <h2 class="app-section-header" id="h-blocks">Sample blocks</h2>
+      <ul class="app-list" id="blocks" data-select>
+        <li><a class="app-row" href="#block/interscalene" data-hold-menu="#row-menu" data-key="interscalene"><span class="app-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v18M7 7l5 5 5-5"/></svg></span><span class="app-row-body"><span class="app-row-title">Interscalene</span><span class="app-row-sub">Upper limb · shoulder</span></span><span class="app-row-chevron" aria-hidden="true"></span></a></li>
+        <li><a class="app-row" href="#block/supraclavicular" data-hold-menu="#row-menu" data-key="supraclavicular"><span class="app-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v18M7 7l5 5 5-5"/></svg></span><span class="app-row-body"><span class="app-row-title">Supraclavicular</span><span class="app-row-sub">Upper limb · arm</span></span><span class="app-row-chevron" aria-hidden="true"></span></a></li>
+        <li><a class="app-row" href="#block/femoral" data-hold-menu="#row-menu" data-key="femoral"><span class="app-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v18M7 17l5-5 5 5"/></svg></span><span class="app-row-body"><span class="app-row-title">Femoral</span><span class="app-row-sub">Lower limb · hip and knee</span></span><span class="app-row-chevron" aria-hidden="true"></span></a></li>
+        <li><a class="app-row" href="#block/adductor-canal" data-hold-menu="#row-menu" data-key="adductor-canal"><span class="app-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v18M7 17l5-5 5 5"/></svg></span><span class="app-row-body"><span class="app-row-title">Adductor canal</span><span class="app-row-sub">Lower limb · knee</span></span><span class="app-row-chevron" aria-hidden="true"></span></a></li>
+        <li><a class="app-row" href="#block/esp" data-hold-menu="#row-menu" data-key="esp"><span class="app-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg></span><span class="app-row-body"><span class="app-row-title">Erector spinae plane</span><span class="app-row-sub">Trunk · chest and abdomen</span></span><span class="app-row-chevron" aria-hidden="true"></span></a></li>
+        <li><a class="app-row" href="#block/tap" data-hold-menu="#row-menu" data-key="tap"><span class="app-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg></span><span class="app-row-body"><span class="app-row-title">Transversus abdominis plane</span><span class="app-row-sub">Trunk · abdominal wall</span></span><span class="app-row-chevron" aria-hidden="true"></span></a></li>
+      </ul>
+      <p class="app-section-footer">Touch and hold a row for its menu. Select, then tick rows or drag a finger down the circles; choose 2 to 4 to compare.</p>
+    </section>
+
+    <section class="app-section" aria-labelledby="h-look">
+      <h2 class="app-section-header" id="h-look">Look</h2>
+      <ul class="app-list">
+        <li><label class="app-row"><span class="app-row-body"><span class="app-row-title">Solid bars</span><span class="app-row-sub">No see-through glass</span></span><input class="app-switch" type="checkbox" role="switch" id="solid"></label></li>
+        <li><button class="app-row app-row--action" type="button" data-open-sheet="#about"><span class="app-row-body"><span class="app-row-title">Open a sheet</span></span></button></li>
+      </ul>
+      <p class="app-section-footer">The sheet opens at half height; pull it up for full height (the page steps back), or down to close.</p>
+    </section>
+    <p class="demo-note">Sample text only, not clinical guidance.</p>
+  </div>
+
+  <!-- Screen 2: a pushed screen -->
+  <div data-screen="detail" hidden>
+    <h1 class="app-large-title" id="detail-title">Interscalene</h1>
+    <div class="demo-hero" aria-hidden="true"><span>Glass over an image</span></div>
+    <div class="app-btn-row">
+      <button class="app-btn app-btn--primary" type="button" data-toast="Saved for later">Save</button>
+      <button class="app-btn app-btn--glass" type="button" data-toast="Link copied">Copy link</button>
+    </div>
+    <section class="app-section" aria-labelledby="h-at">
+      <h2 class="app-section-header" id="h-at">At a glance</h2>
+      <ul class="app-list">
+        <li><div class="app-row"><span class="app-row-body"><span class="app-row-title">Region</span></span><span class="app-row-value" id="d-region">Upper limb</span></div></li>
+        <li><div class="app-row"><span class="app-row-body"><span class="app-row-title">Level</span></span><span class="app-row-value">Resident</span></div></li>
+      </ul>
+      <p class="app-section-footer">Swipe from the left edge to go back (in the sample this works in any browser; in an app only in the iPhone home-screen app).</p>
+    </section>
+    <p class="app-text">A pushed screen slides in from the right and the list shifts left. Scroll down: the title moves into the bar and the content fades under the glass buttons.</p>
+    <p class="app-text">More text, so the page scrolls under the bar and the tab bar. Scrolling down shrinks the tab bar to the current tab; scrolling up brings it back.</p>
+    <p class="app-text">The glass is a tinted blur with a light rim. With Solid bars on (or Reduce Transparency or Increase Contrast where the browser reports them), every glass surface becomes solid paper with the same shapes.</p>
+    <p class="app-text">Rows, cards and text stay solid: glass is only for controls that float over the content.</p>
+    <p class="demo-note">Sample text only, not clinical guidance.</p>
+  </div>
+</main>
+
+<nav class="app-tabbar" aria-label="Sections" data-minimise>
+  <div class="app-tabbar-inner">
+    <a class="app-tab" href="#" aria-current="page"><span class="app-tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg></span>Blocks</a>
+    <a class="app-tab" href="#"><span class="app-tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg></span>3D anatomy</a>
+    <a class="app-tab" href="#"><span class="app-tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20l3-10h10l3 10z"/><path d="M9 10V5h6v5"/></svg></span>Ultrasound</a>
+    <a class="app-tab" href="#"><span class="app-tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h9M19 7h1M4 17h3M13 17h7"/><circle cx="16" cy="7" r="2.5"/><circle cx="10" cy="17" r="2.5"/></svg></span>Settings</a>
+  </div>
+  <button class="app-tabbar-search" type="button" aria-label="Search" data-toast="Search would open here"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg></button>
+</nav>
+
+<!-- Edit mode toolbar: takes the tab bar's place -->
+<div class="app-toolbar" data-select-toolbar="#blocks" hidden>
+  <div class="app-toolbar-inner">
+    <button class="app-btn" type="button" data-needs="1" data-toast="Shared">Share</button>
+    <span class="app-toolbar-count" data-select-count="#blocks">Select items</span>
+    <button class="app-btn" type="button" data-needs="2-4" id="compare-btn">Compare</button>
+  </div>
+</div>
+
+<!-- Touch-and-hold menu for a row -->
+<template id="row-menu">
+  <button class="app-menu-item" data-action="open"><span>Open</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+  <button class="app-menu-item" data-action="select"><span>Select</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M8.5 12.5l2.4 2.4 4.6-5"/></svg></button>
+  <div class="app-menu-sep" role="separator"></div>
+  <button class="app-menu-item" data-action="copy"><span>Copy link</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></button>
+  <button class="app-menu-item" data-action="share"><span>Share</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6h14v-6"/></svg></button>
+</template>
+
+<!-- A sheet with two heights -->
+<dialog class="app-sheet" id="about" data-detents="medium large" aria-labelledby="about-title">
+  <span class="app-sheet-grabber"></span>
+  <div class="app-sheet-head">
+    <span></span>
+    <h2 class="app-sheet-title" id="about-title">About this sample</h2>
+    <button class="app-bar-btn" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
+  </div>
+  <div class="app-sheet-body">
+    <p class="app-text">The kit's glass layer (glass.css) and gestures (gestures.js), switched on with <span class="app-mono">class="app app--glass"</span>. Apps that load app.css alone do not change.</p>
+    <ul class="app-list">
+      <li><div class="app-row"><span class="app-row-body"><span class="app-row-title">Interface font</span></span><span class="app-row-value">System</span></div></li>
+      <li><div class="app-row"><span class="app-row-body"><span class="app-row-title">Titles</span></span><span class="app-row-value">Literata</span></div></li>
+      <li><div class="app-row"><span class="app-row-body"><span class="app-row-title">Motion</span></span><span class="app-row-value">Springs</span></div></li>
+    </ul>
+    <p class="app-text" style="margin-top:16px">Pull the grabber up for full height. Drag down, flick down, tap outside or press Escape to close; Back closes it too.</p>
+  </div>
+</dialog>
+
+<!-- Compare -->
+<dialog class="app-sheet" id="compare" data-detents="large medium" aria-labelledby="compare-title">
+  <span class="app-sheet-grabber"></span>
+  <div class="app-sheet-head">
+    <span></span>
+    <h2 class="app-sheet-title" id="compare-title">Compare</h2>
+    <button class="app-bar-btn" type="button" data-close><span>Done</span></button>
+  </div>
+  <div class="app-sheet-body"><div class="app-compare" id="compare-cols"></div></div>
+</dialog>
+
+<div class="app-toast" id="toast" role="status" aria-live="polite"><span class="app-toast-text" id="toast-text"></span></div>
+
+<script>
+// Sample only: made-up rows, two screens on one page with hash routes.
+var DATA = {
+  interscalene: ['Interscalene', 'Upper limb', 'Shoulder and upper arm', 'Supine, head turned away'],
+  supraclavicular: ['Supraclavicular', 'Upper limb', 'Arm, below the shoulder', 'Supine, head turned away'],
+  femoral: ['Femoral', 'Lower limb', 'Front of the thigh, knee', 'Supine'],
+  'adductor-canal': ['Adductor canal', 'Lower limb', 'Knee, inner leg', 'Supine, leg turned out'],
+  esp: ['Erector spinae plane', 'Trunk', 'Chest or abdominal wall', 'Sitting or on the side'],
+  tap: ['Transversus abdominis plane', 'Trunk', 'Lower abdominal wall', 'Supine']
+};
+var toast = document.getElementById('toast'), toastText = document.getElementById('toast-text'), tt;
+function say(msg) { toastText.textContent = msg; toast.classList.add('is-visible'); clearTimeout(tt); tt = setTimeout(function () { toast.classList.remove('is-visible'); }, 2500); }
+document.addEventListener('click', function (e) { var b = e.target.closest('[data-toast]'); if (b && !b.disabled) say(b.getAttribute('data-toast')); });
+document.querySelectorAll('.app-chip').forEach(function (c) { c.addEventListener('click', function () { c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); }); });
+document.getElementById('solid').addEventListener('change', function (e) { document.documentElement.classList.toggle('app--solid', e.target.checked); });
+
+// hold menu actions
+document.addEventListener('app-menu', function (e) {
+  var row = e.target, a = e.detail.action;
+  if (a === 'open') location.hash = row.getAttribute('href');
+  else if (a === 'select') document.getElementById('blocks').dispatchEvent(new CustomEvent('app-edit', { detail: { row: row } }));
+  else say(a === 'copy' ? 'Link copied' : 'Shared');
+});
+
+// compare 2 to 4
+document.getElementById('compare-btn').addEventListener('click', function () {
+  var cols = document.getElementById('compare-cols'); cols.textContent = '';
+  document.querySelectorAll('#blocks .app-row[aria-checked="true"]').forEach(function (r) {
+    var d = DATA[r.getAttribute('data-key')], c = document.createElement('article');
+    c.className = 'app-compare-col';
+    c.innerHTML = '<h3 class="app-compare-title"></h3><dl><dt>Region</dt><dd></dd><dt>Covers</dt><dd></dd><dt>Position</dt><dd></dd></dl>';
+    c.querySelector('h3').textContent = d[0];
+    var dd = c.querySelectorAll('dd'); dd[0].textContent = d[1]; dd[1].textContent = d[2]; dd[2].textContent = d[3];
+    cols.appendChild(c);
+  });
+  NTFApp.openSheet(document.getElementById('compare'));
+});
+
+// two screens: push and pop with a view transition
+var bar = document.getElementById('bar'), back = document.getElementById('back'), actions = document.getElementById('list-actions');
+function show() {
+  var m = location.hash.match(/^#block\/(.+)$/), d = m && DATA[m[1]];
+  document.querySelector('[data-screen="list"]').hidden = !!d;
+  document.querySelector('[data-screen="detail"]').hidden = !d;
+  back.hidden = !d; actions.hidden = !!d;
+  if (d) { document.getElementById('detail-title').textContent = d[0]; document.getElementById('d-region').textContent = d[1]; }
+  document.getElementById('bar-title').textContent = d ? d[0] : 'Blocks';
+  scrollTo(0, 0);
+  NTFApp.watchTitle(document.getElementById(d ? 'detail-title' : 'large-title'));
+}
+var root = document.documentElement, shown = location.hash;
+addEventListener('hashchange', function () {
+  if (location.hash === shown) return;   // a sheet's history step, not a screen change
+  shown = location.hash;
+  var swiped = root.getAttribute('data-nav') === 'none';   // the edge swipe already moved the page
+  root.setAttribute('data-nav', /^#block\//.test(location.hash) ? 'push' : 'pop');
+  if (document.startViewTransition && !swiped) document.startViewTransition(show); else show();
+});
+back.addEventListener('click', function (e) { e.preventDefault(); if (history.length > 1 && /^#block\//.test(location.hash)) history.back(); else location.hash = ''; });
+document.addEventListener('DOMContentLoaded', show);
+</script>
+</body>
+</html>
