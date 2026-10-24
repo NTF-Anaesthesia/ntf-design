@@ -220,7 +220,12 @@ Link `glass.css` after `app.css`, put `class="app app--glass"` on `<html>`, and 
   not report Reduce Transparency), Increase Contrast, or no `backdrop-filter`.
 - **Type:** the phone's own font for the interface; Literata stays for large titles and card titles. Nothing under 12px.
 - **Motion:** springs as CSS `linear()` curves (`--app-spring`, `--app-spring-snappy`, `--app-spring-bouncy`); all
-  off with Reduce Motion.
+  off with the phone's Reduce Motion or the app's own (`html.app--still`, which works with app.css alone too).
+- **Appearance** `appearance.js` (in `<head>`, no defer, so the saved look is on before the first paint): keeps Solid
+  bars and Reduce motion in localStorage under `ntf-appearance`, shared by every NTF app on the same site, and sets
+  `app--solid` and `app--still` on `<html>`. Put `<div data-appearance></div>` in the app's Settings screen for the
+  ready section (Solid bars appears only with glass.css). Script: `NTFAppearance.get()`, `NTFAppearance.set({...})`,
+  and an `app-appearance` event on `<html>`.
 - **Touch and hold** `[data-hold-menu="#template"]`: 500 ms without moving 10 px opens a menu with a preview; the
   click that comes with lifting the finger is swallowed; right-click, Android's long press, the context-menu key and
   Shift+F10 open the same menu. Every action in a hold menu must also be reachable without holding.

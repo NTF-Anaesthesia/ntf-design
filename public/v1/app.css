@@ -65,6 +65,10 @@
 @media (prefers-reduced-motion:reduce){
   :root{--app-d-press:0ms;--app-d-fast:1ms;--app-d-med:1ms;--app-d-push:1ms;--app-d-sheet:1ms}
 }
+/* html.app--still: the app's own Reduce motion setting (appearance.js), the same as the phone's */
+html.app--still{--app-d-press:0ms;--app-d-fast:1ms;--app-d-med:1ms;--app-d-push:1ms;--app-d-sheet:1ms;scroll-behavior:auto}
+html.app--still *,html.app--still ::before,html.app--still ::after{transition-duration:1ms!important;animation-duration:1ms!important;animation-iteration-count:1!important}
+html.app--still::view-transition-group(*),html.app--still::view-transition-old(*),html.app--still::view-transition-new(*){animation:none!important}
 
 /* ---------- Base for standalone apps ---------- */
 html.app{font-size:106.25%;-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior-y:contain;background:var(--app-ground)}

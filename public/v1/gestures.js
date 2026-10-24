@@ -15,7 +15,9 @@
 (function () {
   'use strict';
   var html = document.documentElement;
-  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reduceMq = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)');
+  // the phone's Reduce Motion, or the app's own (html.app--still, appearance.js); read each time, as either can change
+  function reduce() { return html.classList.contains('app--still') || !!(reduceMq && reduceMq.matches); }
   var HOLD_MS = 500, SLOP = 10;
   function $(s, r) { return (r || document).querySelector(s); }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
@@ -124,7 +126,7 @@
     menu.style.setProperty('--app-menu-origin', (top > pTop ? '50% 0' : '50% 100%'));
     layer.classList.add('is-open');
     html.classList.add('app-menu-open');
-    requestAnimationFrame(function () { wrap.style.top = pTop + 'px'; wrap.style.transform = reduce ? '' : 'scale(1.03)'; });
+    requestAnimationFrame(function () { wrap.style.top = pTop + 'px'; wrap.style.transform = reduce() ? '' : 'scale(1.03)'; });
     menu.addEventListener('click', function (e) {
       var b = e.target.closest('.app-menu-item'); if (!b) return;
       var a = b.getAttribute('data-action'), target = menuFor;
@@ -342,14 +344,14 @@
       var a = hist[0], b = hist[hist.length - 1], v = (b[1] - a[1]) / Math.max(1, b[0] - a[0]);
       var done = dx > innerWidth / 3 || (v > 0.5 && dx > 40), ps = parts; parts = null;
       ps.forEach(function (p) {
-        p.style.transition = reduce ? 'none' : 'transform 340ms var(--app-ease-sheet)';
+        p.style.transition = reduce() ? 'none' : 'transform 340ms var(--app-ease-sheet)';
         p.style.transform = done ? 'translateX(' + innerWidth + 'px)' : '';
       });
       shade.style.transition = 'opacity 340ms linear'; shade.style.opacity = '0';
       setTimeout(function () {
         if (done) { going = true; html.setAttribute('data-nav', 'none'); back.click(); }
         setTimeout(function () { ps.forEach(function (p) { p.style.transition = 'none'; p.style.transform = ''; }); going = false; }, done ? 80 : 0);
-      }, reduce ? 0 : 340);
+      }, reduce() ? 0 : 340);
     }
     document.addEventListener('touchend', end, { passive: true });
     document.addEventListener('touchcancel', end, { passive: true });

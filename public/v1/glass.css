@@ -34,9 +34,10 @@ html.app--glass{
   --app-d-spring:520ms; --app-d-spring-long:640ms;
 }
 @media (prefers-reduced-motion:reduce){html.app--glass{--app-d-spring:1ms;--app-d-spring-long:1ms}}
+html.app--glass.app--still{--app-d-spring:1ms;--app-d-spring-long:1ms}
 
 /* Reduce transparency (where the browser reports it), more contrast, or no backdrop-filter: solid surfaces, same shapes */
-/* html.app--solid: the app's own "Solid bars" setting (Safari does not report the phone's Reduce Transparency) */
+/* html.app--solid: the app's own "Solid bars" setting (appearance.js; Safari does not report the phone's Reduce Transparency) */
 html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(--app-surface);--app-glass-thick:var(--app-surface);
   --app-glass-lens:var(--app-blush);--app-glass-blur:none;--app-glass-blur-thick:none}
 @media (prefers-reduced-transparency:reduce),(prefers-contrast:more){
