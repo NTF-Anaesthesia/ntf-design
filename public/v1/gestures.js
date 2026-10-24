@@ -4,7 +4,8 @@
    - tab bar           nav.app-tabbar[data-minimise]: shrinks to the current tab while scrolling down
    - touch and hold    [data-hold-menu="#template-id"]: a menu with a preview (also right-click, Android long press,
                        the context-menu key and Shift+F10); the element gets an "app-menu" event with detail.action
-   - sheets            dialog.app-sheet[data-detents="medium large"]: drag between heights, or down to close
+   - sheets            dialog.app-sheet[data-detents="medium large"]: drag between heights, or down to close; tap the
+                       grabber to expand or collapse
    - edge swipe back   html[data-edge-back]: from the left edge, the page follows the finger (iPhone home-screen app only,
                        where the phone has no Back gesture of its own; "always" turns it on everywhere for testing)
    - edit mode         .app-list[data-select] + [data-edit-for="#list"]: tick rows, or drag a finger down the ticks
@@ -182,18 +183,25 @@
   }
 
   /* ---------- Sheets with detents ---------- */
-  // Dragged by the grabber and the head only (touch-action: none there before the finger lands), so the body always
-  // scrolls natively. Released, the sheet settles on the nearest height, judged by where it is and how fast it moved.
+  // Dragged by the grabber and the head (touch-action: none there before the finger lands). Below full height a finger
+  // on the body drags the sheet too, as on iOS (the body keeps sideways scrolling); at full height the body scrolls
+  // natively. Released, the sheet settles on the nearest height, judged by where it is and how fast it moved.
+  // From 768px the sheet is a centred dialog: dragging changes its height both ways, and the grabber stays as a button.
   // Each open sheet is a history entry, so Android's Back and the edge swipe close it. Buttons do the same: Done closes,
-  // and a sheet with two heights can be expanded and collapsed from the keyboard (Enter on the grabber).
+  // and a sheet with two heights is expanded and collapsed by tapping or clicking the grabber (or Enter on it).
+  var centred = window.matchMedia ? matchMedia('(min-width: 768px)') : { matches: false };
   function pageParts() { return $$('[data-swipe-page]').length ? $$('[data-swipe-page]') : $$('.app-bar,.app-main'); }
+  function topDetent(ds) { return ds.indexOf('large') >= 0 ? 'large' : ds[ds.length - 1]; }
   function setDetent(sheet, d) {
+    var ds = (sheet.getAttribute('data-detents') || 'medium').split(/\s+/);
     sheet.setAttribute('data-detent', d);
     var large = d === 'large' && sheet.open;
     html.classList.toggle('app-sheet-large-open', large);
     pageParts().forEach(function (p) { p.classList.toggle('app-behind-sheet', large); });
     var g = $('.app-sheet-grabber', sheet);
     if (g) g.setAttribute('aria-expanded', d === 'large' ? 'true' : 'false');
+    var body = $('.app-sheet-body', sheet);
+    if (body) body.style.touchAction = d === topDetent(ds) ? '' : 'pan-x';
   }
   function openSheet(sheet) {
     if (sheet.open) return;
@@ -216,44 +224,75 @@
         if (opener) opener.focus();
       });
       addEventListener('popstate', function () { if (sheet.open) { sheet._pushed = false; sheet.close(); } });
-      var handles = $$('.app-sheet-grabber,.app-sheet-head', sheet);
-      var grab = $('.app-sheet-grabber', sheet);
+      function cycle() { var i = ds.indexOf(sheet.getAttribute('data-detent')); setDetent(sheet, ds[(i + 1) % ds.length]); }
+      var grab = $('.app-sheet-grabber', sheet), body = $('.app-sheet-body', sheet);
       if (grab && ds.length > 1) {
         grab.setAttribute('role', 'button'); grab.tabIndex = 0; grab.setAttribute('aria-label', 'Expand or collapse');
+        grab.removeAttribute('aria-hidden');
         grab.addEventListener('keydown', function (e) {
           if (e.key !== 'Enter' && e.key !== ' ') return;
-          e.preventDefault(); var i = ds.indexOf(sheet.getAttribute('data-detent')); setDetent(sheet, ds[(i + 1) % ds.length]);
+          e.preventDefault(); cycle();
         });
       }
-      var y0 = null, h0 = 0, dy = 0, last = [], id = null;
+      // one drag at a time; a drag that moved swallows the click that follows it
+      var y0 = null, x0 = 0, h0 = 0, dy = 0, last = [], id = null, live = false, from = null, moved = false;
+      function down(e, el, fromBody) {
+        if (fromBody) {   // a finger on the body, below full height; fields and sideways scrollers keep their own
+          if (e.pointerType === 'mouse' || sheet.getAttribute('data-detent') === topDetent(ds) || noGestureInSheet(e.target)) return;
+        } else if (e.target.closest('button:not(.app-sheet-grabber),a,input,select,textarea')) return;
+        y0 = e.clientY; x0 = e.clientX; dy = 0; last = [[e.timeStamp, e.clientY]]; id = e.pointerId; from = el; moved = false;
+        live = !fromBody;   // the body waits until the finger clearly moves up or down
+        h0 = sheet.getBoundingClientRect().height;
+        if (live) start();
+      }
+      function start() {
+        live = true;
+        try { from.setPointerCapture(id); } catch (err) {}
+        sheet.classList.add('is-dragging');
+      }
+      function move(e) {
+        if (y0 === null || e.pointerId !== id) return;
+        dy = e.clientY - y0; last.push([e.timeStamp, e.clientY]); if (last.length > 5) last.shift();
+        if (!live) {
+          if (Math.abs(e.clientX - x0) > SLOP && Math.abs(e.clientX - x0) > Math.abs(dy)) { y0 = null; return; }   // sideways: not ours
+          if (Math.abs(dy) < 6) return;
+          start();
+        }
+        if (Math.abs(dy) > 4) moved = true;
+        var maxH = innerHeight - 12;
+        if (dy < 0 || centred.matches) {   // pulling up (or any drag on a centred dialog): change the height
+          var want = h0 - dy * (centred.matches ? 2 : 1), h = want > maxH ? maxH + (want - maxH) * 0.15 : Math.max(120, want);
+          sheet.style.height = h + 'px'; sheet.style.maxHeight = 'none'; sheet.style.transform = '';
+        } else { sheet.style.height = ''; sheet.style.maxHeight = ''; sheet.style.transform = 'translateY(' + dy + 'px)'; }
+      }
+      function up(e) {
+        if (y0 === null || e.pointerId !== id) return;
+        var wasLive = live;
+        y0 = null; live = false; sheet.classList.remove('is-dragging'); sheet.style.transform = ''; sheet.style.height = ''; sheet.style.maxHeight = '';
+        if (!wasLive || !moved) return;
+        var a = last[0], b = last[last.length - 1], v = (b[1] - a[1]) / Math.max(1, b[0] - a[0]);   // px per ms
+        var projected = dy + v * 200, top = topDetent(ds);   // where a flick would carry it
+        var lower = ds.filter(function (d) { return d !== top; })[0];
+        if (projected < -80) setDetent(sheet, top);
+        else if (projected > 140) { if (sheet.getAttribute('data-detent') === top && lower) setDetent(sheet, lower); else sheet.close(); }
+      }
+      function noGestureInSheet(t) { return !!t.closest('input,textarea,select,[contenteditable],[data-no-gesture],.app-chips,.app-compare'); }
+      var handles = $$('.app-sheet-grabber,.app-sheet-head', sheet);
       handles.forEach(function (h) {
         h.style.touchAction = 'none';
-        h.addEventListener('pointerdown', function (e) {
-          if (e.target.closest('button:not(.app-sheet-grabber),a,input,select,textarea')) return;
-          y0 = e.clientY; dy = 0; last = [[e.timeStamp, e.clientY]]; id = e.pointerId;
-          h0 = sheet.getBoundingClientRect().height;
-          try { h.setPointerCapture(id); } catch (err) {}
-          sheet.classList.add('is-dragging');
-        });
-        h.addEventListener('pointermove', function (e) {
-          if (y0 === null || e.pointerId !== id) return;
-          dy = e.clientY - y0; last.push([e.timeStamp, e.clientY]); if (last.length > 5) last.shift();
-          var maxH = innerHeight - 12;
-          if (dy < 0) {   // pulling up: grow, with resistance past the tallest height
-            var want = h0 - dy, h = want > maxH ? maxH + (want - maxH) * 0.15 : want;
-            sheet.style.height = h + 'px'; sheet.style.transform = '';
-          } else { sheet.style.height = ''; sheet.style.transform = 'translateY(' + dy + 'px)'; }
-        });
-        function up(e) {
-          if (y0 === null || e.pointerId !== id) return;
-          var a = last[0], b = last[last.length - 1], v = (b[1] - a[1]) / Math.max(1, b[0] - a[0]);   // px per ms
-          y0 = null; sheet.classList.remove('is-dragging'); sheet.style.transform = ''; sheet.style.height = '';
-          var i = ds.indexOf(sheet.getAttribute('data-detent')), projected = dy + v * 200;   // where a flick would carry it
-          if (projected < -80) setDetent(sheet, ds[Math.min(ds.length - 1, i + 1)]);
-          else if (projected > 140) { if (i > 0) setDetent(sheet, ds[i - 1]); else sheet.close(); }
-        }
+        h.addEventListener('pointerdown', function (e) { down(e, h, false); });
+        h.addEventListener('pointermove', move);
         h.addEventListener('pointerup', up); h.addEventListener('pointercancel', up);
       });
+      if (body) {
+        body.addEventListener('pointerdown', function (e) { down(e, body, true); });
+        body.addEventListener('pointermove', move);
+        body.addEventListener('pointerup', up); body.addEventListener('pointercancel', up);
+      }
+      sheet.addEventListener('click', function (e) {
+        if (moved) { moved = false; e.preventDefault(); e.stopPropagation(); return; }
+        if (grab && ds.length > 1 && e.target === grab) cycle();
+      }, true);
       addEventListener('resize', function () { if (sheet.open) setDetent(sheet, sheet.getAttribute('data-detent')); });
     });
   }

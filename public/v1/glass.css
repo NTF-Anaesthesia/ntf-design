@@ -174,7 +174,12 @@ html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(
   -webkit-backdrop-filter:var(--app-glass-blur-thick);backdrop-filter:var(--app-glass-blur-thick);
   transition:transform var(--app-d-spring-long) var(--app-spring),inset var(--app-d-spring-long) var(--app-spring),border-radius var(--app-d-spring-long) var(--app-spring),
     height var(--app-d-spring-long) var(--app-spring),overlay var(--app-d-spring-long) allow-discrete,display var(--app-d-spring-long) allow-discrete}
+.app--glass .app-sheet.is-dragging{transition:none}
 .app--glass .app-sheet::backdrop{background:rgb(39 39 34 / .18)}
+/* the grabber: a 5px bar with a finger-sized target around it */
+.app--glass .app-sheet-grabber{position:relative;cursor:grab}
+.app--glass .app-sheet-grabber::before{content:"";position:absolute;inset:-14px -44px -10px}
+.app--glass .app-sheet-grabber:focus-visible{outline:2px solid var(--app-wine);outline-offset:4px}
 .app--glass .app-sheet[data-detent="large"],.app--glass .app-sheet--large{inset:auto 0 0 0;border-radius:var(--app-sheet-r) var(--app-sheet-r) 0 0;background:var(--app-surface);
   -webkit-backdrop-filter:none;backdrop-filter:none}
 .app--glass .app-sheet[data-detent="medium"]{height:55dvh}
@@ -188,8 +193,12 @@ html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(
 .app--glass .app-bar.app-behind-sheet{transform:scale(.93) translateY(8px)}
 .app--glass .app-bar:not(.app-behind-sheet),.app--glass .app-main:not(.app-behind-sheet){transition:transform var(--app-d-spring-long) var(--app-spring),filter var(--app-d-spring-long) linear}
 .app--glass.app-sheet-large-open .app-tabbar{opacity:0;transition:opacity var(--app-d-fast) linear}
+/* larger screens: a centred dialog (app.css centres it on top:50%); medium fits its content, large is taller, and the
+   grabber stays as the Expand button */
 @media (min-width:768px){
-  .app--glass .app-sheet,.app--glass .app-sheet[data-detent]{inset:auto 0 auto 0;width:min(560px,calc(100% - 48px));border-radius:var(--app-sheet-r);height:auto}
+  .app--glass .app-sheet,.app--glass .app-sheet[data-detent]{inset:50% 0 auto 0;width:min(560px,calc(100% - 48px));border-radius:var(--app-sheet-r);height:auto;max-height:min(60dvh,640px)}
+  .app--glass .app-sheet[data-detent="large"]{height:min(88dvh,900px);max-height:88dvh}
+  .app--glass .app-sheet-grabber[role="button"]{display:block;margin-top:8px;cursor:pointer}
   .app--glass .app-behind-sheet,.app--glass .app-bar.app-behind-sheet{transform:none;filter:none}
 }
 
