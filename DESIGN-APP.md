@@ -238,7 +238,7 @@ Link `glass.css` after `app.css`, put `class="app app--glass"` on `<html>`, and 
   Shift+F10 open the same menu. Every action in a hold menu must also be reachable without holding.
 - **Sheets** `dialog.app-sheet[data-detents="medium large"]`: dragged by the grabber and head; below full height a
   finger on the body drags the sheet too, as on iOS (sideways scrollers and fields keep their own), and at full height
-  the body scrolls. They settle on the nearest height by position and speed; tapping or clicking the grabber expands
+  the body scrolls, and pulling down once it is at the top brings the sheet down. They settle on the nearest height by position and speed; tapping or clicking the grabber expands
   and collapses. At full height the content behind steps back. From 768px a sheet is a centred dialog: medium fits its
   content, large is taller, the grabber stays as the Expand button and a mouse drag on the head resizes it. Each sheet
   is a history entry.
