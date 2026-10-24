@@ -226,6 +226,13 @@ Link `glass.css` after `app.css`, put `class="app app--glass"` on `<html>`, and 
   `app--solid` and `app--still` on `<html>`. Put `<div data-appearance></div>` in the app's Settings screen for the
   ready section (Solid bars appears only with glass.css). Script: `NTFAppearance.get()`, `NTFAppearance.set({...})`,
   and an `app-appearance` event on `<html>`.
+- **Themes** `themes.css` (after app.css and glass.css; set by appearance.js, which then adds Theme, Accent colour,
+  Pure black and High contrast rows): `html.app--dark` (Dark, or Auto, the default, while the phone is dark),
+  `html.app--black` (pure black grounds, dark only), `html.app--contrast` (darker text and lines, solid surfaces) and
+  `html[data-accent="teal|navy|forest"]` (wine is the default). Themes change tokens only, so build app colours from
+  `--app-*` tokens and they follow; glass colours are built from `--app-surface`, `--app-ground`, `--app-blush`,
+  `--app-hi` and `--app-shade`. `--app-wine` is the accent in every theme and `--app-ivory` the text on it (dark in
+  dark mode). Clinical colours keep their meaning.
 - **Touch and hold** `[data-hold-menu="#template"]`: 500 ms without moving 10 px opens a menu with a preview; the
   click that comes with lifting the finger is swallowed; right-click, Android's long press, the context-menu key and
   Shift+F10 open the same menu. Every action in a hold menu must also be reachable without holding.

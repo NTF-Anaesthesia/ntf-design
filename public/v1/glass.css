@@ -3,22 +3,26 @@
    The iOS 26 look in NTF colours: floating glass controls over the content, a scroll-edge blur under them instead of
    a full-width bar, a floating tab bar, sheets that float until they are pulled up, the system font for the
    interface (Literata stays for titles), and spring motion. Content (rows, cards, text) stays solid: glass is only
-   for things that float above it. Light only. */
+   for things that float above it. Colours come from the theme's tokens, so themes.css recolours the glass too. */
 
 /* ---------- Tokens ---------- */
 html.app--glass{
   /* the interface font is the phone's own (SF Pro on iPhone, Roboto on Android); titles keep Literata */
   --app-sans:-apple-system,system-ui,BlinkMacSystemFont,'NTF Sans',Inter,'Segoe UI',Roboto,sans-serif;
   /* glass: a tinted, blurred layer with a light rim. "regular" sits over text, "clear" over images and colour */
-  --app-glass:rgb(251 250 246 / .62);
-  --app-glass-clear:rgb(251 250 246 / .34);
-  --app-glass-thick:rgb(251 250 246 / .8);
-  --app-glass-press:rgb(232 222 215 / .7);
-  --app-glass-lens:rgb(255 255 255 / .62);      /* the brighter pill under the current tab or segment */
+  /* built from the theme's tokens (themes.css changes those): --app-hi is the light of the rim and lens, --app-shade
+     the colour of shadows, both as rgb channels */
+  --app-hi:255 255 255; --app-shade:39 39 34;
+  --app-glass:color-mix(in srgb,var(--app-surface) 62%,transparent);
+  --app-glass-clear:color-mix(in srgb,var(--app-surface) 34%,transparent);
+  --app-glass-thick:color-mix(in srgb,var(--app-surface) 80%,transparent);
+  --app-glass-press:color-mix(in srgb,var(--app-blush) 70%,transparent);
+  --app-glass-lens:rgb(var(--app-hi) / .62);      /* the brighter pill under the current tab or segment */
+  --app-edge:var(--app-ground);                    /* the scroll edge fades to this */
   --app-glass-blur:blur(14px) saturate(1.9) brightness(1.04);
   --app-glass-blur-thick:blur(28px) saturate(1.7) brightness(1.03);
-  --app-glass-rim:inset 0 1px 0 rgb(255 255 255 / .75),inset 0 -.5px 0 rgb(255 255 255 / .35),inset 0 0 0 .5px rgb(255 255 255 / .45);
-  --app-glass-shadow:0 0 0 .5px rgb(39 39 34 / .08),0 6px 20px rgb(39 39 34 / .12),0 1px 3px rgb(39 39 34 / .06);
+  --app-glass-rim:inset 0 1px 0 rgb(var(--app-hi) / .75),inset 0 -.5px 0 rgb(var(--app-hi) / .35),inset 0 0 0 .5px rgb(var(--app-hi) / .45);
+  --app-glass-shadow:0 0 0 .5px rgb(var(--app-shade) / .08),0 6px 20px rgb(var(--app-shade) / .12),0 1px 3px rgb(var(--app-shade) / .06);
   --app-glass-r:var(--app-r-full);
   /* the top and bottom of the screen fade the content out under the controls (iOS 26 "scroll edge") */
   --app-edge-h:calc(var(--app-safe-t) + 64px);
@@ -71,7 +75,7 @@ html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(
   padding-inline:calc(var(--app-s4) + var(--app-safe-l)) calc(var(--app-s4) + var(--app-safe-r))}
 /* the edge: a blur that fades out downwards, drawn on ::before so a fixed sheet inside the bar is never trapped */
 .app--glass .app-bar::before{content:"";position:absolute;inset:0 0 -20px 0;z-index:-1;pointer-events:none;opacity:0;
-  background:linear-gradient(rgb(241 237 228 / .9),rgb(241 237 228 / .55) 60%,rgb(241 237 228 / 0));
+  background:linear-gradient(color-mix(in srgb,var(--app-edge) 90%,transparent),color-mix(in srgb,var(--app-edge) 55%,transparent) 60%,transparent);
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
   -webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent);
   transition:opacity var(--app-d-fast) linear}
@@ -82,7 +86,7 @@ html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(
 .app--glass .app-bar-btn{min-width:44px;min-height:44px;padding:0 var(--app-s3);border-radius:var(--app-glass-r);color:var(--app-ink);font-weight:500;
   transition:transform var(--app-d-spring) var(--app-spring-snappy),background-color var(--app-d-fast) linear}
 .app--glass .app-bar-btn:active{opacity:1;transform:scale(1.12);background:var(--app-glass-press)}
-.app--glass .app-bar-btn--accent{color:var(--app-ivory);background:rgb(99 61 60 / .88)}
+.app--glass .app-bar-btn--accent{color:var(--app-ivory);background:color-mix(in srgb,var(--app-wine) 88%,transparent)}
 .app--glass .app-bar-btn--accent:active{background:var(--app-wine-press)}
 .app--glass .app-bar-btn:has(svg):not(:has(span)){padding:0;width:44px}
 .app--glass .app-back{max-width:44vw;padding-inline:0 var(--app-s3)}
@@ -101,7 +105,7 @@ html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(
   background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
 /* the bottom scroll edge */
 .app--glass .app-tabbar::before,.app--glass .app-toolbar::before{content:"";position:absolute;inset:-24px 0 0 0;z-index:-1;pointer-events:none;
-  background:linear-gradient(rgb(241 237 228 / 0),rgb(241 237 228 / .85) 70%);
+  background:linear-gradient(transparent,color-mix(in srgb,var(--app-edge) 85%,transparent) 70%);
   -webkit-mask-image:linear-gradient(transparent,#000 60%);mask-image:linear-gradient(transparent,#000 60%)}
 .app--glass .app-tabbar-inner{pointer-events:auto;position:relative;flex:1 1 auto;min-width:0;max-width:440px;padding:4px;border-radius:var(--app-glass-r);
   transition:transform var(--app-d-spring-long) var(--app-spring-snappy),max-width var(--app-d-spring-long) var(--app-spring)}
@@ -110,7 +114,7 @@ html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(
 .app--glass .app-tab-icon{width:auto;height:28px;background:none!important}
 .app--glass .app-tab-icon svg{width:26px;height:26px}
 .app--glass .app-tab[aria-current="page"],.app--glass .app-tab[aria-selected="true"]{color:var(--app-wine);font-weight:600;
-  background:var(--app-glass-lens);box-shadow:inset 0 0 0 .5px rgb(255 255 255 / .8),0 1px 4px rgb(39 39 34 / .08)}
+  background:var(--app-glass-lens);box-shadow:inset 0 0 0 .5px rgb(var(--app-hi) / .8),0 1px 4px rgb(var(--app-shade) / .08)}
 .app--glass .app-tab:active{transform:scale(.92)}
 .app--glass .app-tab:active:not([aria-current="page"]){background:var(--app-glass-press)}
 .app--glass .app-tabbar-search{pointer-events:auto;flex:none;display:grid;place-items:center;width:62px;height:62px;flex:none;border:0;border-radius:50%;color:var(--app-ink);cursor:pointer;
@@ -149,7 +153,7 @@ html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(
 .app--glass .app-segmented{border-radius:var(--app-glass-r);padding:3px;background:var(--app-glass)}
 .app--glass .app-seg span{border-radius:var(--app-glass-r)}
 .app--glass .app-seg span::before{inset:0;border-radius:var(--app-glass-r);transition:background-color var(--app-d-fast) linear,transform var(--app-d-spring) var(--app-spring-bouncy)}
-.app--glass .app-seg input:checked+span::before{background:var(--app-glass-lens);box-shadow:inset 0 0 0 .5px rgb(255 255 255 / .9),var(--app-shadow-thumb)}
+.app--glass .app-seg input:checked+span::before{background:var(--app-glass-lens);box-shadow:inset 0 0 0 .5px rgb(var(--app-hi) / .9),var(--app-shadow-thumb)}
 .app--glass .app-seg input:checked:active+span::before{transform:scale(1.08)}
 .app--glass .app-seg span::after{display:none}
 /* switch: the knob turns to glass and stretches while held (iOS 26) */
@@ -157,10 +161,10 @@ html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(
 .app--glass .app-switch::before{top:2px;left:2px;width:37px;height:24px;border-radius:var(--app-r-full);
   transition:transform var(--app-d-spring) var(--app-spring-bouncy),width var(--app-d-spring) var(--app-spring-bouncy),background-color var(--app-d-fast) linear,box-shadow var(--app-d-fast) linear}
 .app--glass .app-switch:checked::before{transform:translateX(21px)}
-.app--glass .app-switch:active::before{width:44px;transform:scale(1.18);background:rgb(255 255 255 / .55);box-shadow:var(--app-glass-rim),0 2px 8px rgb(39 39 34 / .18)}
+.app--glass .app-switch:active::before{width:44px;transform:scale(1.18);background:rgb(var(--app-hi) / .55);box-shadow:var(--app-glass-rim),0 2px 8px rgb(var(--app-shade) / .18)}
 .app--glass .app-switch:checked:active::before{transform:translateX(14px) scale(1.18)}
 /* chips: glass pills */
-.app--glass .app-chip::before{background:var(--app-glass);box-shadow:var(--app-glass-rim),0 0 0 .5px rgb(39 39 34 / .12);
+.app--glass .app-chip::before{background:var(--app-glass);box-shadow:var(--app-glass-rim),0 0 0 .5px rgb(var(--app-shade) / .12);
   -webkit-backdrop-filter:var(--app-glass-blur);backdrop-filter:var(--app-glass-blur)}
 .app--glass .app-chip:active::before{transform:scale(1.06)}
 .app--glass .app-chip[aria-pressed="true"]::before,.app--glass .app-chip.is-on::before{background:var(--app-blush);box-shadow:inset 0 0 0 1.5px var(--app-wine)}
@@ -176,7 +180,7 @@ html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(
   transition:transform var(--app-d-spring-long) var(--app-spring),inset var(--app-d-spring-long) var(--app-spring),border-radius var(--app-d-spring-long) var(--app-spring),
     height var(--app-d-spring-long) var(--app-spring),overlay var(--app-d-spring-long) allow-discrete,display var(--app-d-spring-long) allow-discrete}
 .app--glass .app-sheet.is-dragging{transition:none}
-.app--glass .app-sheet::backdrop{background:rgb(39 39 34 / .18)}
+.app--glass .app-sheet::backdrop{background:rgb(var(--app-shade) / .18)}
 /* the grabber: a 5px bar with a finger-sized target around it */
 .app--glass .app-sheet-grabber{position:relative;cursor:grab}
 .app--glass .app-sheet-grabber::before{content:"";position:absolute;inset:-14px -44px -10px}
@@ -206,7 +210,7 @@ html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(
 /* ---------- Menus (touch and hold, and menu buttons) ---------- */
 .app-menu-layer{position:fixed;inset:0;z-index:60;display:none}
 .app-menu-layer.is-open{display:block}
-.app-menu-veil{position:absolute;inset:0;background:rgb(241 237 228 / .35);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);
+.app-menu-veil{position:absolute;inset:0;background:color-mix(in srgb,var(--app-ground) 35%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);
   opacity:0;transition:opacity var(--app-d-med) linear}
 .app-menu-layer.is-open .app-menu-veil{opacity:1}
 .app-menu-preview{position:absolute;margin:0;border-radius:20px;overflow:hidden;background:var(--app-surface);box-shadow:var(--app-shadow-float);
@@ -222,10 +226,10 @@ html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(
   font:inherit;font-size:var(--app-t-body);text-align:left;cursor:pointer;-webkit-user-select:none;user-select:none}
 .app-menu-item>span{flex:1}
 .app-menu-item svg{flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-.app-menu-item.is-active,.app-menu-item:active{background:rgb(39 39 34 / .08)}
+.app-menu-item.is-active,.app-menu-item:active{background:color-mix(in srgb,var(--app-ink) 8%,transparent)}
 .app-menu-item:focus-visible{outline:2px solid var(--app-wine);outline-offset:-3px;border-radius:12px}
 .app-menu-item--danger{color:var(--app-bad)}
-.app-menu-sep{height:6px;margin:4px 0;background:rgb(39 39 34 / .06)}
+.app-menu-sep{height:6px;margin:4px 0;background:color-mix(in srgb,var(--app-ink) 6%,transparent)}
 /* the row being held sinks a little before the menu opens */
 .app-is-holding{transform:scale(.97);transition:transform 380ms var(--app-ease)!important}
 
@@ -252,7 +256,7 @@ html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(
 .app-compare dd{margin:0;font-size:var(--app-t-subhead);line-height:1.4}
 
 /* ---------- Edge swipe back (gestures.js, home-screen iPhone app only) ---------- */
-.app-swipe-shade{position:fixed;inset:0;z-index:50;pointer-events:none;background:rgb(39 39 34 / .16);opacity:0}
+.app-swipe-shade{position:fixed;inset:0;z-index:50;pointer-events:none;background:rgb(var(--app-shade,39 39 34) / .16);opacity:0}
 
 /* ---------- Toast: a glass capsule ---------- */
 .app--glass .app-toast{border-radius:var(--app-glass-r);color:var(--app-ink)}
@@ -263,4 +267,7 @@ html.app--glass.app--solid{--app-glass:var(--app-surface);--app-glass-clear:var(
   .app--glass .app-tabbar::before{display:none}
   .app--glass .app-tabbar-inner{max-width:none;width:76px;border-radius:38px}
   .app--glass .app-tabbar-search{display:none}
+  /* the rail never minimises */
+  .app--glass .app-tabbar.is-minimised .app-tabbar-inner{max-width:none}
+  .app--glass .app-tabbar.is-minimised .app-tab:not([aria-current="page"]){display:flex}
 }
