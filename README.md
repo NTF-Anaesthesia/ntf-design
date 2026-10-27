@@ -21,7 +21,8 @@ Use it:
 Copied from `anantf-site` (`assets/app/`, `fonts/`, logos, design notes) on 23 Oct 2026; until that site loads the
 kit from here, change both copies together. `/v1/` never breaks: a change that would break apps goes in `/v2/`.
 
-Deploy: `npx wrangler deploy` (static files from `public/`, custom domain in `wrangler.jsonc`).
+Deploy: GitHub Actions (`.github/workflows/deploy.yml`) runs `wrangler deploy` on every merge to `main` (static files from
+`public/`, custom domain in `wrangler.jsonc`); a manual `npx wrangler deploy` still works.
 
 Titles changed from Fraunces to Literata on 23 Oct 2026 (Fraunces' curled J and leaning h/n/m read as distorted).
 The family name stays `NTF Serif`, so apps need no change.
