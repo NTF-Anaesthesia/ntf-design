@@ -1,0 +1,77 @@
+/* NTF Anaesthesia design tokens: the fonts and custom properties of app.css, without its components, for apps built
+   on the shared app core (they link this file first, like the other core kits' tokens.css). Light only, like app.css;
+   themes.css adds dark. The --app-* block is a copy of the top of app.css: change both together
+   (tools/check-tokens.mjs fails the Checks when they differ). The --home-* names at the end are the core theme's
+   inputs (its colours before the theme script runs): they point at the NTF tokens, so they need no change. */
+
+@font-face{font-family:'NTF Sans';src:url('fonts/inter.woff2') format('woff2');font-weight:100 900;font-display:swap}
+@font-face{font-family:'NTF Serif';src:url('fonts/literata.woff2') format('woff2');font-weight:200 900;font-display:swap}
+@font-face{font-family:'NTF Mono';src:url('fonts/jetbrains-mono.woff2') format('woff2');font-weight:400 500;font-display:swap}
+
+/* ---------- Tokens ---------- */
+:root{
+  color-scheme:light;
+  /* surfaces: ground below, raised surfaces on top (iOS grouped style, in NTF paper) */
+  --app-ground:#f1ede4;       /* screen background behind grouped sections */
+  --app-surface:#fbfaf6;      /* rows, cards, sheets, choices */
+  --app-paper:#f7f5ef;        /* the website's paper: plain (ungrouped) screens */
+  --app-inset:#eee9df;        /* explanation and note panels */
+  --app-fill:#e6e1d6;         /* tracks, skeletons, segmented background */
+  --app-pressed:#e9e5dc;      /* press fill on surface */
+  --app-pressed-ground:#e3ded3;
+  --app-blush:#e8ded7;        /* selected */
+  --app-bar:rgb(251 250 246 / .84);
+  --app-backdrop:rgb(39 39 34 / .38);
+  /* text and accent: identical to DESIGN.md */
+  --app-ink:#272722; --app-ink-soft:#504e47; --app-muted:#55534d;
+  --app-wine:#633d3c; --app-wine-press:#4b2e2d; --app-ivory:#fffaf0;
+  --app-line:#d7d2c8; --app-line-strong:#8f8574; --app-control:#827b6d;
+  /* clinical meaning, never the brand */
+  --app-ok:#1f6b3a; --app-ok-bg:#e3efe4;
+  --app-bad:#a3262a; --app-bad-bg:#f6e1df;
+  --app-warn:#7a4f00; --app-warn-bg:#f5ead2;
+
+  /* type: 1rem = 17px (follows iOS Dynamic Type and Android font size) */
+  --app-serif:'NTF Serif',Georgia,'Times New Roman',serif;
+  --app-sans:'NTF Sans',Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --app-mono:'NTF Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --app-t-large:calc(34rem/17);    /* large title, Literata */
+  --app-t-title1:calc(28rem/17);   /* score, empty-state, Literata */
+  --app-t-title2:calc(22rem/17);   /* in-content heading, Literata */
+  --app-t-headline:1rem;           /* 17 semibold */
+  --app-t-body:1rem;               /* 17 */
+  --app-t-callout:calc(16rem/17);
+  --app-t-subhead:calc(15rem/17);
+  --app-t-footnote:calc(13rem/17);
+  --app-t-caption:calc(12rem/17);  /* the floor: nothing smaller */
+
+  /* space: 4px grid */
+  --app-s1:4px; --app-s2:8px; --app-s3:12px; --app-s4:16px; --app-s5:20px; --app-s6:24px; --app-s8:32px;
+  --app-gutter:16px;
+  /* shape */
+  --app-r-xs:6px; --app-r-sm:8px; --app-r-md:12px; --app-r-lg:14px; --app-r-xl:22px; --app-r-full:999px;
+  /* bars */
+  --app-bar-h:44px; --app-tab-h:52px;
+  --app-safe-t:env(safe-area-inset-top,0px); --app-safe-b:env(safe-area-inset-bottom,0px);
+  --app-safe-l:env(safe-area-inset-left,0px); --app-safe-r:env(safe-area-inset-right,0px);
+  /* elevation: only for things that float */
+  --app-shadow-thumb:0 1px 2px rgb(39 39 34 / .14),0 2px 6px rgb(39 39 34 / .08);
+  --app-shadow-float:0 8px 28px rgb(39 39 34 / .18),0 2px 6px rgb(39 39 34 / .08);
+  /* motion */
+  --app-ease:cubic-bezier(.2,0,0,1);            /* standard (Material 3) */
+  --app-ease-out:cubic-bezier(.05,.7,.1,1);     /* emphasised decelerate: things arriving */
+  --app-ease-in:cubic-bezier(.3,0,.8,.15);      /* emphasised accelerate: things leaving */
+  --app-ease-sheet:cubic-bezier(.32,.72,0,1);   /* iOS sheet and push feel */
+  --app-d-press:90ms; --app-d-fast:150ms; --app-d-med:250ms; --app-d-push:350ms; --app-d-sheet:420ms;
+}
+@media (prefers-reduced-motion:reduce){
+  :root{--app-d-press:0ms;--app-d-fast:1ms;--app-d-med:1ms;--app-d-push:1ms;--app-d-sheet:1ms}
+}
+
+/* ---------- For the app core (its theme reads these before its script sets the palette) ---------- */
+:root{
+  --home-font:var(--app-sans); --home-serif:var(--app-serif);
+  --home-bg:var(--app-ground); --home-surface:var(--app-surface);
+  --home-ink:var(--app-ink); --home-muted:var(--app-muted); --home-control:var(--app-control);
+  --home-accent:var(--app-wine); --home-bad:var(--app-bad);
+}
